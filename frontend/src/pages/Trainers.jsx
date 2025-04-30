@@ -114,8 +114,8 @@ const Trainers = () => {
                   <p className='font-medium text-lg'>{item.name}</p>
                   <p className='text-gray-600'>
                     {Array.isArray(item.speciality) 
-                      ? item.speciality.join(' | ') 
-                      : item.speciality}
+                      ? JSON.parse(item.speciality).join(' | ') 
+                      : JSON.parse(item.speciality)}
                   </p>
                 </div>
               </div>

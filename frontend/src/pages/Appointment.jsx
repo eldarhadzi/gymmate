@@ -83,9 +83,9 @@ const Appointment = () => {
   // Function to handle speciality (Array or String)
   const handleSpeciality = (speciality) => {
     if (Array.isArray(speciality)) {
-      return speciality.join(' | ');  
+      return JSON.parse(speciality).join(' | ');  
     } else {
-      return speciality;  
+      return JSON.parse(speciality);  
     }
   }
 
