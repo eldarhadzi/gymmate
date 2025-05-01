@@ -80,14 +80,14 @@ const Trainers = () => {
             Group | Couple Training
           </p>
           <p
-            onClick={()=> speciality === 'Yoga' ? navigate('/trainers') : navigate('/trainers/Yoga')} 
-            className={`min-w-[200px] pl-4 py-3 pr-6 border border-border rounded-md transition-all cursor-pointer ${speciality === 'Yoga' ? 'bg-background border-none font-semibold' : ''}`}>
+            onClick={()=> speciality === 'Yoga Trainer' ? navigate('/trainers') : navigate('/trainers/Yoga Trainer')} 
+            className={`min-w-[200px] pl-4 py-3 pr-6 border border-border rounded-md transition-all cursor-pointer ${speciality === 'Yoga Trainer' ? 'bg-background border-none font-semibold' : ''}`}>
             Yoga
           </p>
           <p
-            onClick={()=> speciality === 'Nutrition Consluting' ? navigate('/trainers') : navigate('/trainers/Nutrition Consluting')} 
-            className={`min-w-[200px] pl-4 py-3 pr-6 border border-border rounded-md transition-all cursor-pointer ${speciality === 'Nutrition Consluting' ? 'bg-background border-none font-semibold' : ''}`}>
-            Nutrition Consluting
+            onClick={()=> speciality === 'Nutrition Consulting' ? navigate('/trainers') : navigate('/trainers/Nutrition Consulting')} 
+            className={`min-w-[200px] pl-4 py-3 pr-6 border border-border rounded-md transition-all cursor-pointer ${speciality === 'Nutrition Consulting' ? 'bg-background border-none font-semibold' : ''}`}>
+            Nutrition Consulting
           </p>
               
         </div>
@@ -114,8 +114,8 @@ const Trainers = () => {
                   <p className='font-medium text-lg'>{item.name}</p>
                   <p className='text-gray-600'>
                     {Array.isArray(item.speciality) 
-                      ? JSON.parse(item.speciality).join(' | ') 
-                      : JSON.parse(item.speciality)}
+                      ? item.speciality.join(' | ') 
+                      : item.speciality}
                   </p>
                 </div>
               </div>

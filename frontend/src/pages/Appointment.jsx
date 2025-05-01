@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import { assets } from '../assets/assets'
 import RelativeTrainers from '../components/RelativeTrainers'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 const Appointment = () => {
 
   const {trainerId} = useParams()
-  const {trainers, currencySymbol} = useContext(AppContext)
+  const {trainers, currencySymbol, backendUrl, token, getTrainersData} = useContext(AppContext)
   const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
   const navigate = useNavigate();
 
@@ -53,17 +55,63 @@ const Appointment = () => {
       while(currentDate < endTime){
         let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-        // add slot to the array
-        timeSlots.push({
-          datetime: new Date(currentDate),
-          time: formattedTime,
-        })
+        let day = currentDate.getDate()
+        let month = currentDate.getMonth() + 1
+        let year = currentDate.getFullYear()
+
+        // construct a date
+        const slotDate = day + "_" + month + "_" + year
+        const slotTime = formattedTime
+
+        const isSlotAvailable = trainerInfo.slots_booked[slotDate] && trainerInfo.slots_booked[slotDate].includes(slotTime) ? false : true
+
+        if (isSlotAvailable) {
+          // add slot to the array
+          timeSlots.push({
+            datetime: new Date(currentDate),
+            time: formattedTime,
+          })
+        }
 
         // increment the time by 30 minutes
         currentDate.setMinutes(currentDate.getMinutes() + 30)
     }
 
     setTrainerSlots(prev => ([...prev, timeSlots]))
+  }
+
+}
+
+const bookAppointment = async () => {
+
+  if (!token) {
+    toast.warning('Login to Book Appointment')
+    return navigate('/login')
+  }
+
+  try {
+
+    const date = trainerSlots[slotIndex][0].datetime
+
+    let day = date.getDate()
+    let month = date.getMonth() + 1
+    let year = date.getFullYear()
+
+    const slotDate = day + "_" + month + "_" + year
+
+    const {data} = await axios.post(backendUrl + '/api/user/book-appointment', {trainerId, slotDate, slotTime}, {headers:{token}})
+
+    if (data.success) {
+      toast.success(data.message)
+      getTrainersData()
+      navigate('/my-appointments')
+    } else {
+      toast.error(data.message)
+    }
+    
+  } catch (error) {
+    console.log(error)
+    toast.error(error.message)
   }
 
 }
@@ -83,9 +131,9 @@ const Appointment = () => {
   // Function to handle speciality (Array or String)
   const handleSpeciality = (speciality) => {
     if (Array.isArray(speciality)) {
-      return JSON.parse(speciality).join(' | ');  
+      return speciality.join(' | ');  
     } else {
-      return JSON.parse(speciality);  
+      return speciality;  
     }
   }
 
@@ -145,7 +193,7 @@ const Appointment = () => {
             ))
           }
         </div>
-        <button onClick={()=>navigate('/my-appointments')} className='bg-primary text-white text-md px-16 py-4 rounded-full my-6 hover:bg-hover transition'>Book Appointment</button>
+        <button onClick={bookAppointment} className='bg-primary text-white text-md px-16 py-4 rounded-full my-6 hover:bg-hover transition'>Book Appointment</button>
       </div>
       {/* ----- Listing Relative Trainers ----- */}
       <RelativeTrainers trainerId={trainerId} speciality={trainerInfo.speciality} />  
