@@ -198,8 +198,8 @@ const MyAppointments = () => {
                   }
                 </p>
                 <p className='text-zinc-700 font-medium mt-1'>Address:</p>
-                <p className='text-xs'>{item.trainerData.address.line1}</p>
-                <p className='text-xs'>{item.trainerData.address.line2}</p>
+                <p className='text-xs'>{item.trainerData.address?.line1}</p>
+                <p className='text-xs'>{item.trainerData.address?.line2}</p>
                 <p className='text-xs mt-1'><span className='text-sm text-zinc-700 font-medium'>Date & Time:</span> {slotDateFormat(item.slotDate)} |  {item.slotTime} </p>
               </div>
               <div></div>

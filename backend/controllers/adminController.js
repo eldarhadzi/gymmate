@@ -9,7 +9,7 @@ import userModel from "../models/userModel.js";
 // API for adding trainer
 const addTrainer = async (req, res) => {
     try {
-        const { name, email, password, speciality, degree, experience, about, fees, address} = req.body
+        const { name, email, password, speciality, degree, experience, about, fees, address } = req.body
         const imageFile = req.file 
         
         // checking for all data to add trainer
@@ -47,6 +47,14 @@ const addTrainer = async (req, res) => {
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type:"image"})
         const imageUrl = imageUpload.secure_url
 
+         // parse address if it iss a JSON string
+         let parsedAddress;
+         try {
+             parsedAddress = typeof address === 'string' ? JSON.parse(address) : address;
+         } catch (e) {
+             return res.json({ success: false, message: "Invalid address format" });
+         }
+
         const trainerData = {
             name,
             email,
@@ -56,10 +64,7 @@ const addTrainer = async (req, res) => {
             experience,
             about,
             fees,
-            address: {
-                line1: req.body['address[line1]'],
-                line2: req.body['address[line2]'],
-              },
+            address: parsedAddress,
               speciality: Array.isArray(speciality) ? speciality : [speciality], 
             date: Date.now()
         };

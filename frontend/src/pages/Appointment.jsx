@@ -26,6 +26,7 @@ const Appointment = () => {
 
   const getAvailableSlots = async () => {
     setTrainerSlots([])
+    if (!trainerInfo || !trainerInfo.slots_booked) return;
 
     // getting current date
     let today = new Date()
@@ -121,7 +122,9 @@ const bookAppointment = async () => {
   }, [trainers, trainerId])
 
   useEffect(() => {
-    getAvailableSlots()
+    if (trainerInfo?._id) {
+      getAvailableSlots();
+    }
   }, [trainerInfo])
 
   useEffect(() => {

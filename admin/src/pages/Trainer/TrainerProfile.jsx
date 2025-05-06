@@ -63,8 +63,8 @@ const TrainerProfile = () => {
 
           <div className='flex items-center gap-2 mt-1 text-gray-600'>
             <p>{profileData.degree} - {Array.isArray(profileData.speciality)
-                                        ? JSON.parse(profileData.speciality).join(' | ')
-                                        : JSON.parse(profileData.speciality).join(' | ')}
+                                        ? profileData.speciality.join(' | ')
+                                        : profileData.speciality.join(' | ')}
                                     </p>
             <button className='py-1 px-2.5 border border-primary text-sm rounded-full'>{profileData.experience}</button>
           </div>
