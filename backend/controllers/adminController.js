@@ -47,45 +47,20 @@ const addTrainer = async (req, res) => {
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type:"image"})
         const imageUrl = imageUpload.secure_url
 
-
-        // parse address if it iss a JSON string
-        let parsedAddress;
-        try {
-            parsedAddress = typeof address === 'string' ? JSON.parse(address) : address;
-        } catch (e) {
-            return res.json({ success: false, message: "Invalid address format" });
-        }
-
-        // normalize speciality into an array
-        let parsedSpeciality;
-        try {
-            if (typeof speciality === 'string') {
-                parsedSpeciality = [speciality];
-            } else if (Array.isArray(speciality)) {
-                parsedSpeciality = speciality;
-            } else {
-                return res.json({ success: false, message: "Invalid speciality format" });
-            }
-
-            if (parsedSpeciality.length === 0) {
-                return res.json({ success: false, message: "Speciality must not be empty" });
-            }
-        } catch (e) {
-            return res.json({ success: false, message: "Error processing speciality" });
-        }
-
-
         const trainerData = {
             name,
             email,
             image: imageUrl,
             password: hashedPassword,
-            speciality: parsedSpeciality,
             degree,
             experience,
             about,
             fees,
-            address: parsedAddress,
+            address: {
+                line1: req.body['address[line1]'],
+                line2: req.body['address[line2]'],
+              },
+              speciality: Array.isArray(speciality) ? speciality : [speciality], 
             date: Date.now()
         };
 

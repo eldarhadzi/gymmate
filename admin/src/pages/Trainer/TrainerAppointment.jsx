@@ -46,11 +46,13 @@ const TrainerAppointment = () => {
 
               <div>
                 <p className='text-xs inline border border-primary px-3 rounded-full'>
-                  {item.payment ? "Online" : "CASH"}
+                  {item?.payment ? "Online" : "CASH"}
                 </p>
               </div>
 
-              <p className='max-sm:hidden'>{calculateAge(item.userData.dob)}</p>
+              <p className='max-sm:hidden'>
+                {isNaN(calculateAge(item.userData.dob)) ? '-' : calculateAge(item.userData.dob)}
+              </p>
               <p>{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
               <p>{currency} {item.amount}</p>
 

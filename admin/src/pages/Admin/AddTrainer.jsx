@@ -39,9 +39,10 @@ const AddTrainer = () => {
       formData.append('experience', experience)
       formData.append('fees', Number(fees))
       formData.append('about', about)
-      formData.append('speciality', JSON.stringify(speciality))
+      speciality.forEach(s => formData.append('speciality', s));
       formData.append('degree', degree)
-      formData.append('address', JSON.stringify({ line1: address1, line2: address2 }))
+      formData.append('address[line1]', address1);
+      formData.append('address[line2]', address2);
       
       // console log formdata
       formData.forEach((value, key)=>{
