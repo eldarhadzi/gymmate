@@ -1,8 +1,61 @@
 import React from 'react';
 import { MapPin, Mail, Phone } from 'lucide-react';
 import { FaWhatsapp, FaViber } from 'react-icons/fa';
+import Swal from "sweetalert2"
 
 const Contact = () => {
+
+  const [result, setResult] = React.useState("");
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+  // Custom check for required fields
+  const requiredFields = ["first_name", "last_name", "email", "topic", "message"];
+  for (const field of requiredFields) {
+    if (!formData.get(field)) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Information",
+        text: "Please fill out all required fields before submitting.",
+        confirmButtonColor: "#facc15" 
+      });
+      return;
+    }
+  }
+
+    setResult("Sending....");
+    formData.append("access_key", "9068b65a-d262-4065-861b-650fb56ee06b");
+
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      Swal.fire({
+        title: "Success!",
+        text:"Form submission successfull!",
+        icon: "success",
+         confirmButtonColor: "#22c55e",
+        timer: 1500
+      })
+      event.target.reset(); 
+      setResult("");
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+        footer: '<a href="#">Why do I have this issue?</a>'
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-start p-6">
       {/* Top Title */}
@@ -50,38 +103,50 @@ const Contact = () => {
             Input the form below, and we will get back to you as soon as possible.
           </p>
 
-          <form className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
+            
+            {/* Hidden Subject Input */}
+            <input type="hidden" name="subject" value="GymMate - New Contact Form Message" />
+
             {/* First and Last Name */}
             <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
               <input
+                name="first_name"
                 type="text"
                 placeholder="First name"
+                required
                 className="flex-1 border border-green-500 p-2 rounded"
               />
               <input
+                name="last_name"
                 type="text"
                 placeholder="Last name"
+                required
                 className="flex-1 border border-green-500 p-2 rounded"
               />
             </div>
 
             {/* Email */}
             <input
+              name="email"
               type="email"
               placeholder="E-mail"
+              required
               className="w-full border border-green-500 p-2 rounded"
             />
 
             {/* Telephone */}
             <input
+              name="telephone"
               type="tel"
               placeholder="Telephone (optional)"
+              required
               className="w-full border border-green-500 p-2 rounded"
             />
 
             {/* Topic Dropdown */}
-            <select className="w-full border border-green-500 p-2 rounded text-gray-500">
-              <option>Choose a topic...</option>
+            <select name="topic" className="w-full border border-green-500 p-2 rounded text-gray-500">
+              <option value="">Choose a topic...</option>
               <option>General Inquiry</option>
               <option>Membership Inquiry</option>
               <option>Support</option>
@@ -89,7 +154,9 @@ const Contact = () => {
 
             {/* Message */}
             <textarea
+              name="message"
               placeholder="Write out your message here..."
+              required
               className="w-full h-52 border border-green-500 p-2 rounded"
             ></textarea>
 
