@@ -34,8 +34,8 @@ const TrainersList = () => {
                 <p className='text-neutral-800 text-lg font-medium'>{item.name}</p>
                 <p className='text-zinc-600 text-sm'>
                   {Array.isArray(item.speciality)
-                    ? JSON.parse(item.speciality).join(' | ')
-                    : JSON.parse(item.speciality).join(' | ')}
+                    ? item.speciality.join(' | ')
+                    : item.speciality.join(' | ')}
                 </p>
 
                 <div className='mt-1 flex items-center gap-2 text-sm'>
