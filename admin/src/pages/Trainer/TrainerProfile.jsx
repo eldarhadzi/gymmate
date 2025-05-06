@@ -47,8 +47,12 @@ const TrainerProfile = () => {
     <div>
       <div className='flex flex-col gap-4 m-5'>
 
-        <div>
-          <img className='bg-background group-hover:bg-[#DDFCD2] w-full sm:max-w-64 rounded-lg' src={profileData.image} alt="" />
+        <div className="w-[250px] h-[250px] bg-background border-2 border-primary group-hover:bg-[#DDFCD2] rounded-lg overflow-hidden">
+        <img
+          className="w-full h-full object-contain"
+          src={profileData.image}
+          alt=""
+        />
         </div>
 
         <div className='flex-1 border border-stone-100  rounded-lg p-8 py-7 bg-white'>
