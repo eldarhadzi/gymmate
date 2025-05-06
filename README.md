@@ -97,7 +97,7 @@ The UI/UX design is nearly complete. Users will be able to:
 | 1 | Planning & UI/UX Design (Figma) | 12 days |
 | 2 | Frontend Development | 14 days |
 | 3 | Backend Development | 20 days |
-| 4 | Payment Integration | Stripe, Razorpay, API setup |
+| 4 | Payment Integration | Stripe, API setup |
 | 5 | Testing & Deployment | Full QA, deploy on Vercel |
 | 6 | Final Report | Documentation and Presentation |
 
