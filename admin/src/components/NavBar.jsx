@@ -2,10 +2,12 @@ import React, { useContext } from 'react'
 import { assets } from '../assets/assets'
 import { AdminContext } from '../context/AdminContext'
 import { useNavigate } from 'react-router-dom'
+import { TrainerContext } from '../context/TrainerContext'
 
 const NavBar = () => {
 
   const { aToken, setAToken } = useContext(AdminContext)
+  const { tToken, setTToken } =useContext(TrainerContext)
 
   const navigate = useNavigate()
 
@@ -13,6 +15,8 @@ const NavBar = () => {
     navigate('/')
     aToken && setAToken('')
     aToken && localStorage.removeItem('aToken')
+    tToken && setTToken('')
+    tToken && localStorage.removeItem('tToken')
   }
 
   return (

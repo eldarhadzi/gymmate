@@ -1,4 +1,7 @@
 import trainerModel from "../models/trainerModel.js"
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import appointmentModel from "../models/appointmentModel.js"
 
 const changeAvailability = async (req, res) => {
     try {
@@ -28,4 +31,159 @@ const trainerList = async (req, res) => {
     }
 }
 
-export {changeAvailability, trainerList}
+// API for trainer login
+const loginTrainer = async (req, res) => {
+    try {
+
+        const  { email, password } = req.body
+        const trainer = await trainerModel.findOne({email})
+
+        if (!trainer) {
+            return res.json({success:false, message: "Invalid Credentials"})
+        }
+
+        const isMatch = await bcrypt.compare(password, trainer.password)
+
+        if(isMatch) {
+
+            const token = jwt.sign({id: trainer._id}, process.env.JWT_SECRET)
+
+            res.json({success:true, token})
+
+        } else {
+            res.json({success:false, message: "Invalid Credentials"}) 
+        }
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message}) 
+    }
+}
+
+// API for getting all appointments for personal trainer
+const appointmentsTrainer = async (req, res) => {
+    try {
+
+        const { trainerId } = req.body
+        const appointments = await appointmentModel.find({trainerId})
+
+        res.json({success:true, appointments})
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message}) 
+    }
+}
+
+// API to mark appointment is completed for trainer panel
+const appointmentComplete = async (req, res) => {
+    try {
+
+        const {trainerId, appointmentId} = req.body
+
+        const appointmentData = await appointmentModel.findById(appointmentId)
+
+        if (appointmentData && appointmentData.trainerId === trainerId) {
+            await appointmentModel.findByIdAndUpdate(appointmentId, {isCompleted: true})
+            return res.json({success:true, message:"Appointment Completed"})
+        } else {
+            return res.json({success:false, message:"Mark Failed"})
+        }
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message}) 
+    }
+}
+
+// API to mark appointment is cancelled for trainer panel
+const appointmentCancel = async (req, res) => {
+    try {
+
+        const {trainerId, appointmentId} = req.body
+
+        const appointmentData = await appointmentModel.findById(appointmentId)
+
+        if (appointmentData && appointmentData.trainerId === trainerId) {
+            await appointmentModel.findByIdAndUpdate(appointmentId, {cancelled: true})
+            return res.json({success:true, message:"Appointment Cancelled"})
+        } else {
+            return res.json({success:false, message:"Cancellation Failed"})
+        }
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message}) 
+    }
+}
+
+// API to get dashboard data for trainer panel
+const trainerDashboard = async (req, res) => {
+    try {
+
+        const { trainerId } = req.body
+        const appointments = await appointmentModel.find({trainerId})
+
+        let earnings = 0
+
+        appointments.map((item)=>{
+            if (item.isCompleted || item.payment) {
+                earnings += item.amount
+            }
+        })
+
+        let clients = []
+
+        appointments.map((item)=>{
+            if (!clients.includes(item.userId)) {
+                clients.push(item.userId)
+            }
+        })
+
+        const dashData = {
+            earnings,
+            appointments: appointments.length,
+            clients: clients.length,
+            latestAppointments: appointments.reverse().slice(0, 5)
+        }
+
+        res.json({success:true, dashData})
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message})  
+    }
+}
+
+// API to get trainer profile for trainer panel
+const trainerProfile = async (req, res) => {
+    try {
+
+        const { trainerId } = req.body
+        const profileData = await trainerModel.findById(trainerId).select('-password')
+
+        res.json({success:true, profileData})
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message})   
+    }
+}
+
+// API to update trainer profile data from trainer panel
+const updateTrainerProfile = async (req, res) => {
+    try {
+
+        const { trainerId, fees, address, available } = req.body
+
+        await trainerModel.findByIdAndUpdate(trainerId, {fees, address, available})
+
+        res.json({success:true, message:"Profile updated"})
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message})
+    }
+}
+
+export {changeAvailability, trainerList, loginTrainer, appointmentsTrainer, appointmentCancel, appointmentComplete, trainerDashboard, trainerProfile, updateTrainerProfile}

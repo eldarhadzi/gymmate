@@ -3,6 +3,7 @@ import { assets } from '../assets/assets'
 import { AdminContext } from '../context/AdminContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { TrainerContext } from '../context/TrainerContext'
 
 const Login = () => {
 
@@ -12,6 +13,7 @@ const Login = () => {
   const [password, setPassword] = useState('')
 
   const {setAToken, backendUrl} = useContext(AdminContext)
+  const {setTToken} = useContext(TrainerContext)
 
   const onSubmitHandler = async (event) => {
 
@@ -32,10 +34,20 @@ const Login = () => {
         
       } else {
 
+        const {data} = await axios.post(backendUrl + '/api/trainer/login', {email, password})
+
+        if (data.success) {
+          localStorage.setItem('tToken', data.token)
+          setTToken(data.token)
+          console.log(data.token)
+        } else {
+          toast.error(data.message)
+        }
+
       }
       
     } catch (error) {
-      
+      toast.error(data.message)
     }
   }
 

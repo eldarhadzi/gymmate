@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt'
 import { v2 as cloudinary } from 'cloudinary'
 import trainerModel from "../models/trainerModel.js";
 import jwt from 'jsonwebtoken'
+import appointmentModel from "../models/appointmentModel.js";
+import userModel from "../models/userModel.js";
 
 // API for adding trainer
 const addTrainer = async (req, res) => {
@@ -133,4 +135,72 @@ const allTrainers = async (req,res) => {
     }
 }
 
-export {addTrainer, loginAdmin, allTrainers}
+// API to get all appointments list
+const appointmentsAdmin = async (req, res) => {
+    try {
+
+        const appointments = await appointmentModel.find({})
+        res.json({success:true, appointments})
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message})
+    }
+}
+
+// API to cancel appointment from admin
+const appointmentCancel = async (req, res) => {
+
+    try {
+
+        const { appointmentId } = req.body
+
+        const appointmentData = await appointmentModel.findById(appointmentId)
+
+        await appointmentModel.findByIdAndUpdate(appointmentId, {cancelled: true})
+
+        // making space in trainers slot
+        const {trainerId, slotDate, slotTime} = appointmentData
+
+        const trainerData = await trainerModel.findById(trainerId)
+
+        let slots_booked = trainerData.slots_booked
+
+        slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime)
+
+        await trainerModel.findByIdAndUpdate(trainerId, {slots_booked})
+
+        res.json({success: true, message: 'Appointment Canceled'})
+
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message}) 
+    }
+}
+
+// API to get dashboard data for admin panel
+const adminDashboard = async (req, res) => {
+    try {
+
+        const trainers = await trainerModel.find({})
+        const users = await userModel.find({})
+        const appointments = await appointmentModel.find({})
+
+        const dashData = {
+            trainers: trainers.length,
+            appointments: appointments.length,
+            clients: users.length,
+            latestAppointments: appointments.reverse().slice(0, 5)
+        }
+
+        res.json({success:true, dashData})
+
+        
+    } catch (error) {
+        console.log(error)
+        res.json({success:false, message:error.message}) 
+    }
+}
+
+export {addTrainer, loginAdmin, allTrainers, appointmentsAdmin, appointmentCancel, adminDashboard}

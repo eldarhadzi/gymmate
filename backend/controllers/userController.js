@@ -5,7 +5,8 @@ import jwt from 'jsonwebtoken'
 import {v2 as cloudinary} from 'cloudinary'
 import trainerModel from '../models/trainerModel.js'
 import appointmentModel from '../models/appointmentModel.js'
-import razorpay from 'razorpay'
+import Stripe from 'stripe';
+import purchaseModel from '../models/purchaseModel.js'
 
 // API to register the user
 const registerUser = async (req, res) => {
@@ -246,4 +247,32 @@ const cancelAppointment = async (req, res) => {
 }
 
 
-export {registerUser, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment}
+// API to make payment with Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+const createStripePaymentIntent = async (req, res) => {
+    try {
+        const { appointmentId } = req.body;
+
+        const appointmentData = await appointmentModel.findById(appointmentId);
+        if (!appointmentData || appointmentData.cancelled) {
+            return res.json({ success: false, message: "Appointment cancelled or not found" });
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: appointmentData.amount * 100,
+            currency: process.env.CURRENCY || 'usd',
+            metadata: {
+                appointmentId: appointmentId
+            }
+        });
+
+        res.json({ success: true, clientSecret: paymentIntent.client_secret });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export {registerUser, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment, createStripePaymentIntent}
