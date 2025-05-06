@@ -57,7 +57,7 @@ The UI/UX design is nearly complete. Users will be able to:
 | Trainer Search & Matchmaking | Find trainers based on goals like weight loss, muscle gain, or rehab |
 | Customizable Exercise Programs | Trainers create custom fitness plans tailored to each user |
 | Booking System | Easy calendar-based session booking with user dashboard |
-| Online Payment System | Secure payments via **Stripe** and **Razorpay** |
+| Online Payment System | Secure payments via **Stripe** |
 | Trainer Profiles | Custom profiles showing expertise, certifications, availability |
 | Online Fitness Programs | Educational, beginner-friendly programs for home workouts |
 | Admin Dashboard | Monitor platform analytics, manage users and content |
@@ -70,7 +70,7 @@ The UI/UX design is nearly complete. Users will be able to:
 - **Backend**: Node.js + Express.js  
 - **Database**: MongoDB  
 - **Hosting**: Vercel  
-- **Payment Systems**: Stripe, Razorpay
+- **Payment Systems**: Stripe
 
 ---
 
